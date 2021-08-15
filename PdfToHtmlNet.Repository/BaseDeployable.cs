@@ -3,15 +3,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Reflection;
+using System.Linq;
 
 namespace BaseDeployableNamespace
 {
     public abstract class BaseDeployable
     {
-        protected bool isExecutableDeployed;
-        protected string executableDirectory;
-        protected virtual string ExecutableExtenstion { get; set; }
-        protected virtual string ExecutableName { get; set; }
+        private bool isExecutableDeployed;
+        private string executableDirectory;
+        protected string ExecutableExtenstion => Path.GetExtension(ExecutableEmbeddedResourceName);
+        protected string ExecutableName => ExecutableEmbeddedResourceName.Split('.').Reverse().Skip(1).First();
         protected virtual string ExecutableEmbeddedResourceName { get; set; }
         public string ExecutableDirectory
         {
@@ -35,6 +36,7 @@ namespace BaseDeployableNamespace
             }
             return sb.Length > 0 ? sb.Remove(sb.Length - 1, 1).ToString() : string.Empty;
         }
+
         private static byte[] ExtractResource(string resourceName)
         {
             Assembly a = Assembly.GetExecutingAssembly();
@@ -69,7 +71,7 @@ namespace BaseDeployableNamespace
                     File.Delete(ExecutableFullPath);
             }
             if (!File.Exists(ExecutableFullPath))
-                using (var fs = new FileStream(ExecutableFullPath, FileMode.CreateNew, FileAccess.Write))
+                using (FileStream fs = new FileStream(ExecutableFullPath, FileMode.CreateNew, FileAccess.Write))
                     fs.Write(packageBinary.ToArray(), 0, packageBinary.ToArray().Length);
             isExecutableDeployed = true;
         }

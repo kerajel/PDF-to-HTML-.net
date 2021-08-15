@@ -9,8 +9,6 @@ namespace PdfToHtmlNet
 {
     public class Converter : BaseDeployable
     {
-        protected override string ExecutableExtenstion { get; set; } = ".exe";
-        protected override string ExecutableName { get; set; } = "PdfToHtmlNet";
         protected override string ExecutableEmbeddedResourceName { get; set; } = "PdfToHtmlNet.Repository.PdfToHtmlNet.exe";
 
         public Encoding Encoding { get; set; } = Encoding.UTF8;
@@ -30,7 +28,7 @@ namespace PdfToHtmlNet
             try
             {
                 xdoc = XDocument.Parse(output);
-                var parsedCorrectly = xdoc.Root.Elements()
+                bool parsedCorrectly = xdoc.Root.Elements()
                     .All(r => r.Name == "OperationStatus" || r.Name == "ErrorMessage");
                 if (!parsedCorrectly)
                     throw new Exception();
